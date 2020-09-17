@@ -69,6 +69,7 @@ def index():
         result += "<h3>[GET] /personas?limit=[]&offset=[] --> mostrar el listado de personas (limite and offset are optional)</h3>"
         result += "<h3>[POST] /registro --> ingresar nuevo registro de pulsaciones por JSON</h3>"
         result += "<h3>[GET] /comparativa --> mostrar un gráfico que compare cuantas personas hay de cada nacionalidad"
+        result += "<h3>[GET] /comparativa/nacionalidad --> compara nacionalidades
         
         return(result)
     except:
@@ -90,7 +91,7 @@ def reset():
 def personas():
     try:
         # Mostrar todas las personas
-        result = persona.report()
+        result = persona.report(dict_format=True)
         return jsonify(result)
     except:
         return jsonify({'trace': traceback.format_exc()})
@@ -109,15 +110,63 @@ def comparativa():
         return jsonify({'trace': traceback.format_exc()})
 
 
+@app.route("/comparativa/nacionalidad")
+def comparativa_nacionalidad():
+    try:
+        conn = sqlite3.connect(db['database'])
+        c = conn.cursor()
+
+        c.execute('SELECT nationality FROM persona')
+
+                
+        query_results = c.fetchall()
+
+    
+        conn.close()
+
+        nat_rev = persona.nationality_review(query_results)
+
+        #uso_lenguajes = {'Python': 29.9, 'Javascript': 19.1,
+         #            'Go': 16.2, 'Java': 10.5, 'C++': 10.2,
+          #           'C#': 8.2, 'C': 5.9
+           #          }
+
+
+
+    
+
+        fig = plt.figure()
+        fig.suptitle('API', fontsize=16)
+        ax = fig.add_subplot()
+
+    
+
+        ax.pie(nat_rev.values(), labels=nat_rev.keys(), 
+               autopct='%1.1f%%', shadow=True, startangle=90
+               )
+        ax.axis('equal')
+
+   
+        
+
+        
+        output = io.BytesIO()
+        FigureCanvas(fig).print_png(output)
+        plt.close(fig)  
+        return Response(output.getvalue(), mimetype='image/png')
+    except:
+        return jsonify({'trace': traceback.format_exc()})
+
+
 @app.route("/registro", methods=['POST'])
 def registro():
     if request.method == 'POST':
         # Obtener del HTTP POST JSON el nombre y los pulsos
-        # name = ...
-        # age = ...
-        # nationality = ...
+        name = str(request.form.get('name'))
+        age = int(request.form.get('age'))
+        nationality = str(request.form.get('nationality'))
         
-        # persona.insert(name, int(age), nationality)
+        persona.insert(name, int(age), nationality)
         return Response(status=200)
     
 
