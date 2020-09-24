@@ -16,7 +16,7 @@ __version__ = "1.1"
 import os
 import sqlite3
 
-db = {}
+
 
 
 def create_schema():
@@ -66,9 +66,11 @@ def dict_factory(cursor, row):
     return d
 
 
-def report(limit=0, offset=0):
+def report(limit=0, offset=0, dict_format=False):
     # Conectarse a la base de datos
     conn = sqlite3.connect(db['database'])
+    if dict_format is True:
+        conn.row_factory = dict_factory
     c = conn.cursor()
 
     query = 'SELECT name, age, nationality FROM persona'
@@ -86,3 +88,16 @@ def report(limit=0, offset=0):
     # Cerrar la conexión con la base de datos
     conn.close()
     return query_results
+
+    
+    
+def nationality_review(lista):
+    
+    dicc = {}
+        
+        
+    for x in lista:
+        s = lista.count(x)
+        dicc[x] = s
+
+    return dicc
