@@ -69,7 +69,7 @@ def index():
         result += "<h3>[GET] /personas?limit=[]&offset=[] --> mostrar el listado de personas (limite and offset are optional)</h3>"
         result += "<h3>[POST] /registro --> ingresar nuevo registro de pulsaciones por JSON</h3>"
         result += "<h3>[GET] /comparativa --> mostrar un gráfico que compare cuantas personas hay de cada nacionalidad"
-        result += "<h3>[GET] /comparativa/nacionalidad --> compara nacionalidades
+        result += "<h3>[GET] /comparativa/nacionalidad --> compara nacionalidades"
         
         return(result)
     except:
@@ -126,20 +126,11 @@ def comparativa_nacionalidad():
 
         nat_rev = persona.nationality_review(query_results)
 
-        #uso_lenguajes = {'Python': 29.9, 'Javascript': 19.1,
-         #            'Go': 16.2, 'Java': 10.5, 'C++': 10.2,
-          #           'C#': 8.2, 'C': 5.9
-           #          }
-
-
-
-    
-
+        
         fig = plt.figure()
         fig.suptitle('API', fontsize=16)
         ax = fig.add_subplot()
 
-    
 
         ax.pie(nat_rev.values(), labels=nat_rev.keys(), 
                autopct='%1.1f%%', shadow=True, startangle=90
